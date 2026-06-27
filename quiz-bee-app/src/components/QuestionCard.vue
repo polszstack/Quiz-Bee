@@ -1,39 +1,26 @@
 <template>
   <div 
-    class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border relative overflow-hidden transition-all duration-300"
-    :class="questionChanged ? 'border-amber-500/30' : 'border-white/20'"
+    class="bg-white rounded-2xl shadow-sm border p-6 transition-all"
+    :class="questionChanged ? 'border-amber-300' : 'border-gray-200'"
   >
-    <!-- Header -->
     <div class="flex items-center justify-between mb-4">
-      <span class="bg-purple-500/20 text-purple-200 px-3 py-1 rounded-full text-xs font-medium">
+      <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-medium">
         {{ displayQuestion.category }}
       </span>
-      <span 
-        class="px-3 py-1 rounded-full text-xs font-medium capitalize"
-        :class="difficultyClass"
-      >
+      <span class="px-3 py-1 rounded-full text-xs font-medium capitalize" :class="difficultyClass">
         {{ displayQuestion.difficulty }}
       </span>
     </div>
 
-    <!-- Anti-Cheat Notice -->
-    <div 
-      v-if="questionChanged"
-      class="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg px-4 py-2 mb-4 text-center"
-    >
-      <span class="text-purple-200 text-xs font-medium">🔒 Question secured for anti-cheating</span>
+    <div v-if="questionChanged" class="bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 mb-4 text-center">
+      <span class="text-amber-700 text-xs font-medium">🔒 Question secured</span>
     </div>
 
-    <!-- Question -->
-    <h2 
-      class="text-white text-lg font-medium mb-6 leading-relaxed"
-      :class="{ 'text-amber-300/90': questionChanged }"
-    >
+    <h2 class="text-gray-900 text-lg font-medium mb-6 leading-relaxed" :class="{ 'text-amber-700': questionChanged }">
       {{ displayQuestion.question }}
     </h2>
 
-    <!-- Answers Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 gap-3">
       <AnswerOption
         v-for="(answer, index) in displayQuestion.answers"
         :key="index"
@@ -45,14 +32,6 @@
         :disabled="gameState === 'answered' || gameState === 'timeout'"
         @select="$emit('answer', getOriginalAnswer(answer))"
       />
-    </div>
-
-    <!-- Watermark -->
-    <div 
-      v-if="questionChanged"
-      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-12 text-4xl font-bold text-red-500/5 pointer-events-none select-none whitespace-nowrap"
-    >
-      ANTI-CHEAT ACTIVE
     </div>
   </div>
 </template>
@@ -70,23 +49,19 @@ const props = defineProps<{
   questionChanged?: boolean
 }>()
 
-defineEmits<{
-  answer: [answer: string]
-}>()
+defineEmits<{ answer: [answer: string] }>()
 
 const displayQuestion = computed(() => props.question)
 
 const difficultyClass = computed(() => {
   const d = props.question.difficulty
-  if (d === 'easy') return 'bg-emerald-500/20 text-emerald-300'
-  if (d === 'medium') return 'bg-amber-500/20 text-amber-300'
-  if (d === 'hard') return 'bg-red-500/20 text-red-300'
-  return 'bg-purple-500/20 text-purple-200'
+  if (d === 'easy') return 'bg-green-50 text-green-700'
+  if (d === 'medium') return 'bg-amber-50 text-amber-700'
+  if (d === 'hard') return 'bg-red-50 text-red-700'
+  return 'bg-gray-50 text-gray-700'
 })
 
-const originalCorrectAnswer = computed(() => {
-  return cleanAnswer(props.question.correctAnswer)
-})
+const originalCorrectAnswer = computed(() => cleanAnswer(props.question.correctAnswer))
 
 function cleanAnswer(answer: string): string {
   return answer
