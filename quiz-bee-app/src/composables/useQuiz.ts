@@ -8,6 +8,7 @@ import type {
   TimerSettings
 } from '../types/quiz';
 import { fetchQuestions, fetchCategories } from '../services/api';
+import { useAntiCheat } from './useAntiCheat'; // ✅ ADD THIS IMPORT
 
 export function useQuiz() {
   const playerInfo = ref<PlayerInfo>({
@@ -27,29 +28,28 @@ export function useQuiz() {
   const categories = ref<QuizCategory[]>([]);
   const categoriesLoading = ref(false);
 
-  // Anti-cheat placeholders
-  const showWarning = ref(false);
-  const warningMessage = ref('');
-  const tabSwitchCount = ref(0);
-  const questionChanged = ref(false);
+  // ✅ USE ACTUAL ANTI-CHEAT INSTEAD OF PLACEHOLDERS
+  const antiCheat = useAntiCheat();
 
   // Timer related refs
-  const questionTimeLeft = ref(30);
+  const questionTimeLeft = ref(25); // ✅ Changed to 25
   const totalTimeLeft = ref(0);
 
   const timerSettings = ref<TimerSettings>({
-    questionTime: 30,
+    questionTime: 25, // ✅ Changed to 25
     totalTime: 0
   });
 
   let questionTimerInterval: number | null = null;
-  let totalTimerInterval: number | null = null;
 
   const timerWarning = ref(false);
 
-  const currentQuestion = computed(
-    () => questions.value[currentQuestionIndex.value] || null
-  );
+  const currentQuestion = computed(() => {
+    // ✅ Use anti-cheat display question
+    const displayQuestion = antiCheat.getDisplayQuestion();
+    if (displayQuestion) return displayQuestion;
+    return questions.value[currentQuestionIndex.value] || null;
+  });
 
   const progress = computed(() =>
     questions.value.length > 0
@@ -89,31 +89,6 @@ export function useQuiz() {
     }
 
     timerWarning.value = false;
-  }
-
-  function startTotalTimer() {
-    stopTotalTimer();
-
-    if (timerSettings.value.totalTime > 0) {
-      totalTimeLeft.value = timerSettings.value.totalTime;
-
-      totalTimerInterval = window.setInterval(() => {
-        totalTimeLeft.value--;
-
-        if (totalTimeLeft.value <= 0) {
-          stopTotalTimer();
-          stopQuestionTimer();
-          gameState.value = 'gameover';
-        }
-      }, 1000);
-    }
-  }
-
-  function stopTotalTimer() {
-    if (totalTimerInterval !== null) {
-      clearInterval(totalTimerInterval);
-      totalTimerInterval = null;
-    }
   }
 
   function handleTimeout() {
@@ -193,8 +168,13 @@ export function useQuiz() {
       isCorrect.value = null;
       gameState.value = 'playing';
 
+      // ✅ Reset and set anti-cheat for first question
+      antiCheat.resetAntiCheat();
+      if (questions.value[0]) {
+        antiCheat.setCurrentQuestion(questions.value[0]);
+      }
+
       startQuestionTimer();
-      startTotalTimer();
     } catch (e) {
       error.value =
         'Failed to load questions. Please try different settings.';
@@ -230,16 +210,23 @@ export function useQuiz() {
       isCorrect.value = null;
       gameState.value = 'playing';
 
+      // ✅ Set anti-cheat for next question
+      const nextQuestion = questions.value[currentQuestionIndex.value];
+      if (nextQuestion) {
+        antiCheat.setCurrentQuestion(nextQuestion);
+      }
+
       startQuestionTimer();
     } else {
-      stopTotalTimer();
       gameState.value = 'gameover';
     }
   }
 
   function resetGame() {
     stopQuestionTimer();
-    stopTotalTimer();
+
+    // ✅ Reset anti-cheat
+    antiCheat.resetAntiCheat();
 
     gameState.value = 'registration';
     questions.value = [];
@@ -248,13 +235,7 @@ export function useQuiz() {
     selectedAnswer.value = null;
     isCorrect.value = null;
     questionTimeLeft.value = timerSettings.value.questionTime;
-    totalTimeLeft.value = timerSettings.value.totalTime;
     timerWarning.value = false;
-
-    showWarning.value = false;
-    warningMessage.value = '';
-    tabSwitchCount.value = 0;
-    questionChanged.value = false;
 
     playerInfo.value = {
       name: '',
@@ -265,7 +246,6 @@ export function useQuiz() {
 
   onUnmounted(() => {
     stopQuestionTimer();
-    stopTotalTimer();
   });
 
   return {
@@ -287,10 +267,11 @@ export function useQuiz() {
     timerSettings,
     timerWarning,
     questionTimePercentage,
-    showWarning,
-    warningMessage,
-    tabSwitchCount,
-    questionChanged,
+    // ✅ Return actual anti-cheat values
+    showWarning: antiCheat.showWarning,
+    warningMessage: antiCheat.warningMessage,
+    tabSwitchCount: antiCheat.tabSwitchCount,
+    questionChanged: antiCheat.questionChanged,
     loadCategories,
     registerPlayer,
     startGame,
