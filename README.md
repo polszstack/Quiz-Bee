@@ -15,7 +15,7 @@ A web-based quiz application built with Vue 3, TypeScript, and Tailwind CSS. Fea
 
 ## 🚀 Live Demo
 
-[Play Quiz Bee](https://jvanp.github.io/Quiz-Bee/)
+[Play Quiz Bee](https://polszstack.github.io/Quiz-Bee/)
 
 ## 🛠️ Tech Stack
 
