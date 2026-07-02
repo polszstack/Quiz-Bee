@@ -6,7 +6,7 @@
         <div class="flex items-center justify-between">
           <!-- Left: Logo and Title -->
           <div class="flex items-center gap-2 sm:gap-3">
-            <img src="/icons/bee.png" alt="Quiz Bee" class="w-8 h-8 sm:w-10 sm:h-10" />
+            <img src="/icons/bee3.png" alt="Quiz Bee" class="w-8 h-8 sm:w-10 sm:h-10" />
             <div>
               <h1 class="text-lg sm:text-xl font-bold text-gray-900">Quiz Bee</h1>
               <p class="text-xs text-gray-500 hidden sm:block">Test your knowledge</p>
