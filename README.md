@@ -1,4 +1,4 @@
-# 🐝 Quiz Bee
+# 🐝 Quiz Bee!
 
 A web-based quiz application built with Vue 3, TypeScript, and Tailwind CSS. Features timed questions, score tracking, anti-cheat protection, and dynamic trivia from the Open Trivia Database API.
 
