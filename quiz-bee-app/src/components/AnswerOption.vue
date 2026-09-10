@@ -6,7 +6,7 @@
     :class="buttonClasses"
   >
     <div class="flex items-center gap-3">
-      <span class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-semibold" :class="letterClasses">
+      <span class="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-semibold" :class="letterClasses">
         {{ letters[index] }}
       </span>
       <span class="text-sm text-gray-900 flex-1">{{ answer }}</span>
